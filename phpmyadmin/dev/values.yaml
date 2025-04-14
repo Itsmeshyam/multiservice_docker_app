@@ -1,0 +1,25 @@
+phpmyadmin:
+  name: pma
+  labels:
+    app: phpmyadmin
+    env: dev
+    stack: phpadmin-stack
+  image:
+    repository: phpmyadmin/phpmyadmin
+    tag: latest
+    pullPolicy: Always
+  replicas: 1
+  configmap:
+    APP_ENV: "dev"
+    PMA_HOST: "mysql.db.svc.cluster.local"
+    PMA_PORT: "3306"
+    UPLOAD_LIMIT: "100M"
+  containerPorts:
+    http: 80
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "250m"
+      memory: "256Mi"

@@ -1,0 +1,11 @@
+nginx:
+  namespace: nginx
+  upstreamUrl: "my-upstream-url"
+  upstreamPort: 8080
+  replicas: 1
+  image:
+    repository: nginx
+    tag: "1.19.10"
+  service:
+    type: ClusterIP  # Default service type, can be overridden for different environments
+    port: 80

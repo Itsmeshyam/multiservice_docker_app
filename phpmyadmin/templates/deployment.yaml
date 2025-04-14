@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.phpmyadmin.name }}
+  labels:
+    {{- toYaml .Values.phpmyadmin.labels | nindent 4 }}
+spec:
+  replicas: {{ .Values.phpmyadmin.replicas }}
+  selector:
+    matchLabels:
+      {{- toYaml .Values.phpmyadmin.labels | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- toYaml .Values.phpmyadmin.labels | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Values.phpmyadmin.name }}
+          image: {{ .Values.phpmyadmin.image.repository }}:{{ .Values.phpmyadmin.image.tag }}
+          imagePullPolicy: {{ .Values.phpmyadmin.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.phpmyadmin.name }}-configmap
+                optional: false
+            - secretRef:
+                name: {{ .Values.phpmyadmin.name }}-secret
+                optional: false
+          ports:
+            - containerPort: {{ .Values.phpmyadmin.containerPorts.http }}
+          resources:
+            requests:
+              cpu: "{{ .Values.phpmyadmin.resources.requests.cpu }}"
+              memory: "{{ .Values.phpmyadmin.resources.requests.memory }}"
+            limits:
+              cpu: "{{ .Values.phpmyadmin.resources.limits.cpu }}"
+              memory: "{{ .Values.phpmyadmin.resources.limits.memory }}"

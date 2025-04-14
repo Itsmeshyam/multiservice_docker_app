@@ -1,0 +1,17 @@
+db:
+  name: mysql
+  labels:
+    app: db
+    env: dev
+    stack: phpmyadmin
+  image:
+    repository: mysql
+    tag: "8.3"
+    pullPolicy: Always
+  replicas: 1  # MySQL typically runs as a single instance unless clustered
+  configmap:
+    MYSQL_DATABASE: mydatabase
+    MYSQL_USER: db_user
+    APP_ENV: dev
+  containerPorts:
+    mysql: 3306

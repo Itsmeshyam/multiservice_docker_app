@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-proxy
+  namespace: {{ .Values.nginx.namespace }}
+spec:
+  replicas: {{ .Values.nginx.replicas }}
+  selector:
+    matchLabels:
+      app: nginx-proxy
+  template:
+    metadata:
+      labels:
+        app: nginx-proxy
+    spec:
+      containers:
+        - name: nginx
+          image: {{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d
+          ports:
+            - containerPort: 80
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: nginx-proxy-config

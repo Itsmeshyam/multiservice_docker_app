@@ -1,0 +1,11 @@
+nginx:
+  namespace: nginx
+  upstreamUrl: "pma.phpmyadmin.svc.cluster.local"  # updated to phpMyAdmin's K8s DNS
+  upstreamPort: 80
+  replicas: 1
+  image:
+    repository: nginx
+    tag: "1.19.10"
+  service:
+    type: NodePort
+    port: 80
