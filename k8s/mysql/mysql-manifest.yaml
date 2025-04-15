@@ -1,0 +1,83 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-configmap
+  namespace: db
+  labels:
+    app: db
+    env: dev
+    stack: phpmyadmin
+data:
+  MYSQL_DATABASE: "mydatabase"
+  MYSQL_USER: "db_user"
+  APP_ENV: "dev"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-secret
+  namespace: db
+  labels:
+    app: db
+    env: dev
+    stack: phpmyadmin
+type: Opaque
+data:
+  MYSQL_PASSWORD: "ZGJfcGFzc3dvcmQ="          # base64 for "db_password"
+  MYSQL_ROOT_PASSWORD: "ZGJfcGFzc3dvcmQ="      # base64 for "db_password"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment
+  namespace: db
+  labels:
+    app: db
+    env: dev
+    stack: phpmyadmin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+      stack: phpmyadmin
+  template:
+    metadata:
+      labels:
+        app: db
+        env: dev
+        stack: phpmyadmin
+    spec:
+      containers:
+        - name: mysql-container
+          image: mysql:8.3
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3306
+          envFrom:
+            - configMapRef:
+                name: mysql-configmap
+            - secretRef:
+                name: mysql-secret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+  namespace: db
+  labels:
+    app: db
+    env: dev
+    stack: phpmyadmin
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3306
+      protocol: TCP
+      targetPort: 3306
+  selector:
+    app: db
+    stack: phpmyadmin

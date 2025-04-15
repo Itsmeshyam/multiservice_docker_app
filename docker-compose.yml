@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.3
+    environment:
+      MYSQL_ROOT_PASSWORD: db_password
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: db_user
+      MYSQL_PASSWORD: db_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - backend
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    depends_on:
+      - mysql
+    networks:
+      - backend
+
+  nginx:
+    image: shyamdascs/proxy:v1
+    ports:
+      - "8089:80"  # Change to 8080 if you want it to run on port 8080
+    depends_on:
+      - phpmyadmin
+    networks:
+      - backend
+
+volumes:
+  mysql_data:
+
+networks:
+  backend:

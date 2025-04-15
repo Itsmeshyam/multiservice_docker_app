@@ -1,0 +1,94 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pma-configmap
+  namespace: phpmyadmin
+  labels:
+    app: phpmyadmin
+    env: dev
+    stack: phpmyadmin
+data:
+  APP_ENV: "dev"
+  PMA_HOST: "mysql-service.db.svc.cluster.local"
+  PMA_PORT: "3306"
+  UPLOAD_LIMIT: "100M"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pma-secret
+  namespace: phpmyadmin
+  labels:
+    app: phpmyadmin
+    env: dev
+    stack: phpmyadmin
+type: Opaque
+data:
+  MYSQL_PASSWORD: "ZGJfcGFzc3dvcmQ="         # base64 for "db_password"
+  MYSQL_ROOT_PASSWORD: "ZGJfcGFzc3dvcmQ="     # base64 for "db_password"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pma-deployment
+  namespace: phpmyadmin
+  labels:
+    app: phpmyadmin
+    env: dev
+    stack: phpmyadmin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: phpmyadmin
+      env: dev
+      stack: phpmyadmin
+  template:
+    metadata:
+      labels:
+        app: phpmyadmin
+        env: dev
+        stack: phpmyadmin
+    spec:
+      containers:
+        - name: pma-container
+          image: phpmyadmin/phpmyadmin:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: pma-configmap
+            - secretRef:
+                name: pma-secret
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pma-service
+  namespace: phpmyadmin
+  labels:
+    app: phpmyadmin
+    env: dev
+    stack: phpmyadmin
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app: phpmyadmin
+    env: dev
+    stack: phpmyadmin

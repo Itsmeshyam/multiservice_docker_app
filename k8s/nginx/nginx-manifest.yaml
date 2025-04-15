@@ -1,44 +1,45 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx-deployment
-  namespace: proxy
+  namespace: nginx
   labels:
-    id: C0929653
     app: nginx-app
     env: dev
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-      id: C0929653
+      app: nginx-app
+      env: dev
   template:
     metadata:
       labels:
-        id: C0929653
-        app: nginx
+        app: nginx-app
         env: dev
     spec:
       containers:
-      - name: nginx
-        image: shyamdascs/nginx-inclass2:v1
-        ports:
-        - containerPort: 80
+        - name: nginx
+          image: shyamdascs/proxy:v2
+          ports:
+            - containerPort: 80
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: nginx-service
-  namespace: proxy
+  namespace: nginx
   labels:
-    id: C0929653
     app: nginx-app
     env: dev
 spec:
+  type: NodePort
   selector:
-    id: C0929653
+    app: nginx-app
+    env: dev
   ports:
     - protocol: TCP
       port: 80
       targetPort: 80
-  type: NodePort
