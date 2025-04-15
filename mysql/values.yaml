@@ -1,29 +1,17 @@
 db:
-  name: wp-database
+  name: mysql
   labels:
     app: db
     env: dev
-    stack: wordpress
+    stack: phpmyadmin
   image:
-    repository: mariadb
-    tag: 10.6.4-focal
+    repository: mysql
+    tag: "8.3"
     pullPolicy: Always
-  replicas: 1
+  replicas: 1  # MySQL typically runs as a single instance unless clustered
   configmap:
-    ## KEY: "value"
-    MYSQL_DATABASE: wordpress
-    MYSQL_USER: wordpress
+    MYSQL_DATABASE: mydatabase
+    MYSQL_USER: db_user
     APP_ENV: dev
   containerPorts:
-      mysql: 3306
-  # volume:
-  #     name: nginx-proxy-cache-store
-  #     mount:
-  #         path: /var/lib/mysql
-  #         name: nginx-proxy-cache-store
-  #     storage: 1T
-  #     nfs:
-  #         path: /shared_volume
-  #         server: dev-cache-filestore.internal.gdev.postmedia.digital
-  #     claim:
-  #         name: nginx-proxy-cache-store-claim
+    mysql: 3306

@@ -42,3 +42,9 @@ helm uninstall nginx-proxy -n nginx
  kubectl get pods -n db
  kubectl get service -n nginx
 ```
+ - ArgoCD
+```
+ 
+ kubectl port-forward service/argocd-server 8081:80 -n argocd
+  
+```
