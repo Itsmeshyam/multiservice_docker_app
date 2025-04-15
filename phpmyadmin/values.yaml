@@ -16,3 +16,10 @@ phpmyadmin:
     UPLOAD_LIMIT: "100M"
   containerPorts:
     http: 80
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "250m"
+      memory: "256Mi"
